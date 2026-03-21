@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import type { RootState, AppDispatch } from "../app/store";
 import { fetchNews } from "../features/news/newsSlice";
+import NewsCard from "../components/NewsCard";
 
 export default function Home() {
   const dispatch = useDispatch<AppDispatch>();
@@ -28,13 +29,7 @@ export default function Home() {
     <h1>Top Headlines</h1>
 
       {news.map((article) => (
-        <div key={article.id}>
-          <h3>{article.title}</h3>
-          <p>{article.description}</p>
-
-          {/* GNews does NOT have user.name → use source */}
-          <p>Source: {article.source.name}</p>
-        </div>
+        <NewsCard key={article.id} article={article} />
       ))}
   </div>
   );
