@@ -58,7 +58,22 @@ export const fetchNews = createAsyncThunk<NewsArticle[]>(
   }
 );
 
-// Fetch by Category (IMPORTANT CHANGE)
+// Saerch by title
+export const fetchNewsBySearch = createAsyncThunk<
+  NewsArticle[],
+  string
+>("news/fetchNewsBySearch", async (query) => {
+  const response = await fetch(
+    `https://gnews.io/api/v4/search?q=${encodeURIComponent(
+      query
+    )}&lang=en&max=10&apikey=${API_KEY}`
+  );
+
+  const data: GNewsResponse = await response.json();
+  return data.articles || [];
+});
+
+// Fetch by Category 
 export const fetchNewsByCategory = createAsyncThunk<
   NewsArticle[],
   string
@@ -103,6 +118,20 @@ export const newsSlice = createSlice({
       .addCase(fetchNews.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to fetch news";
+      })
+
+      // Fetch by Search 
+      .addCase(fetchNewsBySearch.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchNewsBySearch.fulfilled, (state, action) => {
+        state.loading = false;
+        state.news = action.payload;
+      })
+      .addCase(fetchNewsBySearch.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to search news";
       })
 
       // Fetch by category
