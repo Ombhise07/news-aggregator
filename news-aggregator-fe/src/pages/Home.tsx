@@ -5,6 +5,7 @@ import type { RootState, AppDispatch } from "../app/store";
 import { fetchNews } from "../features/news/newsSlice";
 import NewsCard from "../components/NewsCard";
 import SearchBar from "../components/SearchBar";
+import TagFilter from "../components/TagFilter";
 
 export default function Home() {
   const dispatch = useDispatch<AppDispatch>();
@@ -29,6 +30,7 @@ export default function Home() {
   <div>
     <h1>Top Headlines</h1>
       <SearchBar />
+      <TagFilter />
       {news.map((article) => (
         <NewsCard key={article.id} article={article} />
       ))}
