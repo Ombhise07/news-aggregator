@@ -2,7 +2,7 @@ import { useDispatch } from "react-redux";
 import { useState } from "react";
 
 import type { AppDispatch } from "../app/store";
-import { setSearchInput, fetchNewsByCategory } from "../features/news/newsSlice";
+import { setSearchInput, fetchNewsByCategory, fetchNewsBySearch } from "../features/news/newsSlice";
 
 function SearchBar() {
   const dispatch = useDispatch<AppDispatch>();
@@ -11,8 +11,8 @@ function SearchBar() {
   const handleSearch = () => {
     dispatch(setSearchInput(searchText));
 
-    if (searchText.trim()) {
-      dispatch(fetchNewsByCategory(searchText));
+    if (searchText.trim()) {  
+      dispatch(fetchNewsBySearch(searchText));
     }
   };
 

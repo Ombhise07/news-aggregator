@@ -46,17 +46,40 @@ const API_KEY = import.meta.env.VITE_GNEWS_API_KEY;
 const BASE_URL = "https://gnews.io/api/v4/top-headlines";
 
 // Fetch Top Headlines (default)
-export const fetchNews = createAsyncThunk<NewsArticle[]>(
-  "news/fetchNews",
-  async () => {
-    const response = await fetch(
-      `${BASE_URL}?category=general&lang=en&country=us&max=10&apikey=${API_KEY}`
-    );
+// export const fetchNews = createAsyncThunk<NewsArticle[]>(
+//   "news/fetchNews",
+//   async () => {
+//     const response = await fetch(
+//       `${BASE_URL}?category=general&lang=en&country=us&max=10&apikey=${API_KEY}`
+//     );
 
-    const data: GNewsResponse = await response.json();
-    return data.articles || [];
+//     const data: GNewsResponse = await response.json();
+//     return data.articles || [];
+//   }
+// );
+
+export const fetchNews = createAsyncThunk<
+  NewsArticle[],
+  { category?: string; query?: string } | void
+>("news/fetchNews", async (params) => {
+  const category = params?.category || "general";
+  const query = params?.query;
+
+  let url = "";
+
+  if (query) {
+    url = `https://gnews.io/api/v4/search?q=${encodeURIComponent(
+      query
+    )}&lang=en&max=10&apikey=${API_KEY}`;
+  } else {
+    url = `${BASE_URL}?category=${category}&lang=en&country=us&max=10&apikey=${API_KEY}`;
   }
-);
+
+  const response = await fetch(url);
+  const data: GNewsResponse = await response.json();
+
+  return data.articles || [];
+});
 
 // Saerch by title
 export const fetchNewsBySearch = createAsyncThunk<
