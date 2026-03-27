@@ -1,8 +1,12 @@
 import { useDispatch } from "react-redux";
 import { useState } from "react";
+import { Search } from "lucide-react";
 
 import type { AppDispatch } from "../app/store";
-import { setSearchInput, fetchNewsByCategory, fetchNewsBySearch } from "../features/news/newsSlice";
+import {
+  setSearchInput,
+  fetchNewsBySearch,
+} from "../features/news/newsSlice";
 
 function SearchBar() {
   const dispatch = useDispatch<AppDispatch>();
@@ -11,39 +15,71 @@ function SearchBar() {
   const handleSearch = () => {
     dispatch(setSearchInput(searchText));
 
-    if (searchText.trim()) {  
+    if (searchText.trim()) {
       dispatch(fetchNewsBySearch(searchText));
     }
   };
 
   return (
-    <div className="w-full flex justify-center mt-6 px-4">
-      <div className="flex items-center w-full max-w-xl bg-white border border-gray-200 rounded-2xl p-1.5 shadow-md transition-all duration-200 focus-within:ring-2 focus-within:ring-indigo-400 focus-within:border-indigo-500">
+    <div className="w-full flex justify-center mt-4 md:mt-6 px-4">
+      <div
+        className="
+          relative flex items-center w-full max-w-xl
+          bg-surface-container-lowest/80 backdrop-blur-md
+          border border-outline-variant
+          rounded-full
+          px-3 py-1.5
+          shadow-sm
+          transition-all duration-200
+          focus-within:ring-2 focus-within:ring-secondary
+        "
+      >
+        {/* Icon */}
+        <div className="pl-2 pr-2 text-outline">
+          <Search className="w-5 h-5" />
+        </div>
 
+        {/* Input */}
         <input
           type="text"
-          placeholder="Search news..."
+          placeholder="Search verified news..."
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") handleSearch();
           }}
-          className="flex-1 px-4 py-3 text-sm text-gray-700 placeholder-gray-400 outline-none rounded-xl"
+          className="
+            flex-1
+            bg-transparent
+            px-2 py-2.5
+            text-sm md:text-base
+            text-gray-800
+            placeholder:text-outline-variant
+            outline-none
+          "
         />
 
+        {/* Button */}
         <button
-          onClick={handleSearch}
-          disabled={!searchText.trim()}
-          className={`px-5 py-2.5 text-sm font-medium rounded-xl transition-all duration-150
-            ${
-              searchText.trim()
-                ? "bg-indigo-500 text-white hover:bg-indigo-600 active:scale-95"
-                : "bg-gray-300 text-gray-500 cursor-not-allowed"
-            }`}
-        >
-          Search
-        </button>
+            onClick={handleSearch}
+            disabled={!searchText.trim()}
+            className={`
+              flex items-center justify-center
+              px-4 md:px-5 py-2
+              text-sm font-medium
+              rounded-full
+              transition-all duration-150
 
+              ${
+                searchText.trim()
+                  ? "bg-blue-600 text-white hover:bg-blue-700 active:scale-95"
+                  : "bg-gray-200 text-gray-400 cursor-not-allowed"
+              }
+            `}
+          >
+          <span className="hidden sm:inline">Search</span>
+          <Search className="w-4 h-4 sm:hidden" />
+        </button>
       </div>
     </div>
   );

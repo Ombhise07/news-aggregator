@@ -45,19 +45,6 @@ const initialState: NewsState = {
 const API_KEY = import.meta.env.VITE_GNEWS_API_KEY;
 const BASE_URL = "https://gnews.io/api/v4/top-headlines";
 
-// Fetch Top Headlines (default)
-// export const fetchNews = createAsyncThunk<NewsArticle[]>(
-//   "news/fetchNews",
-//   async () => {
-//     const response = await fetch(
-//       `${BASE_URL}?category=general&lang=en&country=us&max=10&apikey=${API_KEY}`
-//     );
-
-//     const data: GNewsResponse = await response.json();
-//     return data.articles || [];
-//   }
-// );
-
 export const fetchNews = createAsyncThunk<
   NewsArticle[],
   { category?: string; query?: string } | void
