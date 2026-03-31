@@ -6,7 +6,7 @@ import { fetchNews } from "../features/news/newsSlice";
 import NewsCard from "../components/NewsCard";
 import SearchBar from "../components/SearchBar";
 import TagFilter from "../components/TagFilter";
-// import Loader from "../components/Loader";
+import Loader from "../components/Loader";
 // import ErrorMessage from "../components/ErrorMessage";
 
 export default function Home() {
@@ -44,7 +44,7 @@ export default function Home() {
       {/*  Loader */}
       {loading && (
         <div className="flex justify-center items-center py-20">
-          {/* <Loader /> */}
+          <Loader />
         </div>
       )}
 
