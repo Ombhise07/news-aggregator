@@ -8,7 +8,11 @@ import {
   fetchNewsBySearch,
 } from "../features/news/newsSlice";
 
-function SearchBar() {
+interface SearchBarProps {
+  isCompact?: boolean;
+}
+
+function SearchBar({isCompact = false}: SearchBarProps) {
   const dispatch = useDispatch<AppDispatch>();
   const [searchText, setSearchText] = useState<string>("");
 
@@ -21,7 +25,7 @@ function SearchBar() {
   };
 
   return (
-    <div className="w-full flex justify-center mt-4 md:mt-6 px-4">
+    <div className={`${isCompact ? "w-full" : "w-full flex justify-center mt-4 md:mt-6 px-4"}`}>
       <div
         className="
           relative flex items-center w-full max-w-xl
@@ -51,7 +55,7 @@ function SearchBar() {
           className="
             flex-1
             bg-transparent
-            px-2 py-2.5
+            py-2 md:py-2.5
             text-sm md:text-base
             text-gray-800
             placeholder:text-outline-variant

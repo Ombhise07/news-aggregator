@@ -38,7 +38,7 @@ export default function TagFilter() {
   };
 
   return (
-    <div className="w-full px-4 md:px-6 mb-6 md:mb-10">
+    <div className="px-4 md:px-8 lg:px-12 mb-6 md:mb-10">
       {/* Scrollable container */}
       <div className="flex items-center gap-3 overflow-x-auto hide-scrollbar pb-2">
         
