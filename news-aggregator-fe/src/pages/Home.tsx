@@ -8,13 +8,19 @@ import TagFilter from "../components/TagFilter";
 import Loader from "../components/Loader";
 import ErrorMessage from "../components/ErrorMessage";
 import Navbar from "../components/Navbar";
+import HeroCard from "../components/HeroCard";
 
 export default function Home() {
+
   const dispatch = useDispatch<AppDispatch>();
 
   const { news, loading, error } = useSelector(
     (state: RootState) => state.news
   );
+
+  const hero = news[0];
+  const side = news.slice(1, 3);
+  const rest = news.slice(3);
 
   useEffect(() => {
     dispatch(fetchNews());
@@ -53,21 +59,37 @@ export default function Home() {
         )}
 
         {/*  News Grid */}
-        {!loading && !error && (
-          <div
-            className="
+        {!loading && !error && news.length > 0 && (
+          <div className="px-4 md:px-8 lg:px-12 pb-10 space-y-10">
+
+            {/* 🟦 BENTO TOP */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+              {/* 🟦 Hero */}
+              <div className="lg:col-span-8">
+                {hero && <HeroCard article={hero} />}
+              </div>
+
+              {/* 🟩 Side Cards */}
+              <div className="lg:col-span-4 flex flex-col gap-6">
+                {side.map((article) => (
+                  <NewsCard key={article.id} article={article} />
+                ))}
+              </div>
+            </div>
+
+            {/* 🟨 Rest Grid */}
+            <div className="
               grid
               grid-cols-1
               sm:grid-cols-2
               lg:grid-cols-3
               gap-6 md:gap-8
-              px-4 md:px-8 lg:px-12
-              pb-10
-            "
-          >
-            {news.map((article) => (
-              <NewsCard key={article.id} article={article} />
-            ))}
+            ">
+              {rest.map((article) => (
+                <NewsCard key={article.id} article={article} />
+              ))}
+            </div>
           </div>
         )}
       </main>
