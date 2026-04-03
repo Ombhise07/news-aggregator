@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 
 interface NewsCardProps {
   article: NewsArticle;
+  variant?: "default" | "compact" | "grid";
 }
 
-export default function NewsCard({ article }: NewsCardProps) {
+export default function NewsCard({ article, variant = "default" }: NewsCardProps) {
 
   const navigate = useNavigate();
 
@@ -24,7 +25,8 @@ export default function NewsCard({ article }: NewsCardProps) {
       "
     >
       {/* Image */}
-      <div className="relative w-full aspect-video overflow-hidden bg-surface-container">
+      {variant !== "compact" && (
+        <div className="relative w-full aspect-video overflow-hidden bg-surface-container">
         <img
           src={article.image || "https://via.placeholder.com/600x400"}
           alt={article.title}
@@ -35,6 +37,7 @@ export default function NewsCard({ article }: NewsCardProps) {
           "
         />
       </div>
+      )}
 
       {/* Content */}
       <div className="p-4 md:p-5 flex flex-col gap-3">
@@ -73,7 +76,8 @@ export default function NewsCard({ article }: NewsCardProps) {
         </p>
 
         {/* Read More */}
-        <a
+        {variant === "default" && (
+          <a
           href={article.url}
           target="_blank"
           rel="noopener noreferrer"
@@ -86,6 +90,7 @@ export default function NewsCard({ article }: NewsCardProps) {
         >
           Read full article →
         </a>
+        )}
       </div>
     </article>
   );
