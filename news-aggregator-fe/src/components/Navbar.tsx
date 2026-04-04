@@ -1,7 +1,14 @@
-import { Bookmark } from "lucide-react";
+import { Bookmark, LogOut } from "lucide-react";
 import SearchBar from "./SearchBar";
 
 export default function Navbar() {
+
+  const handleLogout = () => {
+    // Example logout logic
+    localStorage.removeItem("token"); // or whatever you store
+    window.location.href = "/login";  // redirect to login page
+  };
+
   return (
     <header
       className="
@@ -21,17 +28,17 @@ export default function Navbar() {
       >
         {/* Logo */}
         <h1 className="text-xl md:text-2xl font-headline font-bold italic text-primary whitespace-nowrap">
-            News<span className="text-secondary">Hub</span>
+          News<span className="text-secondary">Hub</span>
         </h1>
 
-        {/* Search (hidden on small screens) */}
+        {/* Search */}
         <div className="hidden md:flex flex-1 max-w-xl">
           <SearchBar isCompact />
         </div>
 
         {/* Actions */}
         <div className="flex items-center gap-2 md:gap-4">
-          
+
           {/* Bookmark */}
           <button
             className="
@@ -43,7 +50,24 @@ export default function Navbar() {
             <Bookmark className="w-5 h-5 text-on-surface-variant" />
           </button>
 
-          {/* Mobile Search Button (optional later) */}
+          {/* Logout */}
+          <button
+            onClick={handleLogout}
+            className="
+              flex items-center gap-2
+              px-3 py-2
+              rounded-full
+              bg-red-500 text-white
+              hover:bg-red-600
+              transition-colors
+              text-sm font-medium
+            "
+          >
+            <LogOut className="w-4 h-4" />
+            <span className="hidden md:inline">Logout</span>
+          </button>
+
+          {/* Mobile Search */}
           <button
             className="
               md:hidden
@@ -53,6 +77,7 @@ export default function Navbar() {
           >
             🔍
           </button>
+
         </div>
       </div>
     </header>
