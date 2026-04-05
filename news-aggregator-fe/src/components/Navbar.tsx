@@ -26,6 +26,7 @@ export default function Navbar() {
           gap-4
         "
       >
+      {/* Logo for the site */}
         {/* Logo */}
         <h1 className="text-xl md:text-2xl font-headline font-bold italic text-primary whitespace-nowrap">
           News<span className="text-secondary">Hub</span>
@@ -67,7 +68,7 @@ export default function Navbar() {
             <span className="hidden md:inline">Logout</span>
           </button>
 
-          {/* Mobile Search */}
+          {/* Web and mobile Search */}
           <button
             className="
               md:hidden
