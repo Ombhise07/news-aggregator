@@ -1,12 +1,15 @@
 import { Bookmark, LogOut } from "lucide-react";
 import SearchBar from "./SearchBar";
+import { useNavigate } from "react-router-dom";
 
 export default function Navbar() {
+
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     // Example logout logic
     localStorage.removeItem("token"); // or whatever you store
-    window.location.href = "/login";  // redirect to login page
+    navigate("/login") // redirect to login page
   };
 
   return (
