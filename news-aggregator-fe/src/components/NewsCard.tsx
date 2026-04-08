@@ -1,5 +1,11 @@
 import type { NewsArticle } from "../features/news/newsSlice";
 import { useNavigate } from "react-router-dom";
+import { Bookmark } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+
+import type { RootState, AppDispatch } from "../app/store";
+import { addToFavorites, removeFromFavorites } from "../features/favorites/favoritesSlice";
+
 
 interface NewsCardProps {
   article: NewsArticle;
@@ -9,10 +15,28 @@ interface NewsCardProps {
 export default function NewsCard({ article, variant = "default" }: NewsCardProps) {
 
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
+
+  const favorites = useSelector(
+    (state: RootState) => state.favorites.favorites
+  );
+
+  const isFavorite = favorites.some((item) => item.id === article.id);
+
+  const handleFavoriteClick = (e: React.MouseEvent) => {
+    e.stopPropagation()       // prevent card click navigation
+
+    if(isFavorite){
+      dispatch(removeFromFavorites(article.id));
+    }
+    else{
+      dispatch(addToFavorites(article));
+    }
+  };
 
   return (
     <article
-      onClick={() => navigate("/news-details", {state: article})}
+      onClick={() => navigate(`/news/${article.id}`, {state: article})}
       className="
         group cursior-pointer
         bg-surface-container-lowest
@@ -36,6 +60,26 @@ export default function NewsCard({ article, variant = "default" }: NewsCardProps
             group-hover:scale-105
           "
         />
+
+        {/* Bookmark Button  */}
+        <button
+          onClick={handleFavoriteClick}
+          className="
+            absolute top-2 right-2
+            p-2 rounded-full
+            bg-white/80 backdrop-blur
+            hover:bg-surface-container
+            transition-colors
+          "
+        >
+          <Bookmark
+            className={`w-5 h-5 transition-all duration-200 ${
+              isFavorite
+                ? "text-primary fill-current"   //  saved state
+                : "text-on-surface-variant"     // default
+            }`}
+          />
+        </button>
       </div>
       )}
 

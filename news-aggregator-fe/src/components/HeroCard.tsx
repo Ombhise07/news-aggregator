@@ -1,5 +1,11 @@
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+
 import type { NewsArticle } from "../features/news/newsSlice";
+import type { RootState, AppDispatch } from "../app/store";
+
+import { addToFavorites, removeFromFavorites } from "../features/favorites/favoritesSlice";
+import { Bookmark } from "lucide-react";
 
 interface Props {
   article: NewsArticle;
@@ -7,6 +13,26 @@ interface Props {
 
 export default function HeroCard({ article }: Props) {
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
+
+  const favorites = useSelector(
+    (state: RootState) => state.favorites.favorites
+  );
+
+  // checking is favorite clicked
+  const isFavorite = favorites.some((item) => item.id === article.id);
+
+  //function to handle the favorite clicked
+  const handleFavoriteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();   // prevent from redirecting on news details
+
+    if(isFavorite){
+      dispatch(removeFromFavorites(article.id));
+    }
+    else{
+      dispatch(addToFavorites(article));
+    }
+  };
 
   return (
     <article
@@ -24,6 +50,26 @@ export default function HeroCard({ article }: Props) {
             group-hover:scale-105
           "
         />
+
+        {/* BookMark Button */}
+        <button
+          onClick={handleFavoriteClick}
+          className="
+            absolute top-3 right-3
+            p-2 rounded-full
+            bg-white/80 backdrop-blur
+            hover:bg-surface-container
+            transition-colors
+          "
+        >
+          <Bookmark
+            className={`w-5 h-5 transition-all duration-200 ${
+              isFavorite
+                ? "text-primary fill-current"   //  saved state
+                : "text-on-surface-variant"     // default
+            }`}
+          />
+        </button>
       </div>
 
       {/* Content */}
