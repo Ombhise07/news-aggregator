@@ -2,10 +2,34 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { ExternalLink, Bookmark, Share2, Flag, ShieldCheck } from "lucide-react";
 import Navbar from "../components/Navbar";
 
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState, AppDispatch } from "../app/store";
+import {
+  addToFavorites,
+  removeFromFavorites,
+} from "../features/favorites/favoritesSlice";
+
 export default function NewsDetails() {
   const location = useLocation();
   const navigate = useNavigate();
   const article = location.state;
+  const dispatch = useDispatch<AppDispatch>();
+
+  const favorites = useSelector(
+    (state: RootState) => state.favorites.favorites
+  );
+
+  const isFavorite = favorites.some(
+    (item) => item.id === article.id
+  );
+
+  const handleFavoriteClick = () => {
+    if (isFavorite) {
+      dispatch(removeFromFavorites(article.id));
+    } else {
+      dispatch(addToFavorites(article));
+    }
+  };
 
   if (!article) {
     return (
@@ -95,9 +119,25 @@ export default function NewsDetails() {
                 <ExternalLink size={14} />
               </a>
               <div className="grid grid-cols-2 gap-3">
-                <button className="flex items-center justify-center gap-2 py-3 px-4 bg-slate-100 border border-slate-200 rounded-full text-slate-800 font-label text-xs font-bold hover:bg-slate-200 active:scale-95 transition-all">
-                  <Bookmark size={14} fill="currentColor" />
-                  Save
+                <button
+                  onClick={handleFavoriteClick}
+                  className={`
+                    flex items-center justify-center gap-2 py-3 px-4
+                    rounded-full
+                    ${
+                      isFavorite
+                        ? "bg-indigo-600 text-white border-indigo-600 hover:bg-indigo-700"
+                        : "bg-slate-100 border-slate-200 text-slate-800 hover:bg-slate-200"
+                    }
+                  `}
+                >
+                  <Bookmark
+                    size={14}
+                    className={`transition-all duration-200 ${
+                      isFavorite ? "scale-105" : ""
+                    }`}
+                  />
+                  {isFavorite ? "Saved" : "Save"}
                 </button>
                 <button className="flex items-center justify-center gap-2 py-3 px-4 bg-slate-100 border border-slate-200 rounded-full text-slate-800 font-label text-xs font-bold hover:bg-slate-200 active:scale-95 transition-all">
                   <Share2 size={14} />
@@ -204,9 +244,26 @@ export default function NewsDetails() {
                 </a>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <button className="flex items-center justify-center gap-2 py-3 px-4 bg-slate-100 border border-slate-200 rounded-full text-slate-800 font-label text-xs font-bold hover:bg-slate-200 transition-colors">
-                    <Bookmark size={14} fill="currentColor" />
-                    Save
+                  <button
+                    onClick={handleFavoriteClick}
+                    className={`
+                      flex items-center justify-center gap-2 py-3 px-4
+                      border rounded-full font-label text-xs font-bold
+                      transition-colors
+                      ${
+                        isFavorite
+                          ? "bg-indigo-600 text-white border-indigo-600 hover:bg-indigo-700"
+                          : "bg-slate-100 border-slate-200 text-slate-800 hover:bg-slate-200"
+                      }
+                    `}
+                  >
+                    <Bookmark
+                      size={14}
+                      className={`transition-all duration-200 ${
+                        isFavorite ? "scale-105" : ""
+                      }`}
+                    />
+                    {isFavorite ? "Saved" : "Save"}
                   </button>
                   <button className="flex items-center justify-center gap-2 py-3 px-4 bg-slate-100 border border-slate-200 rounded-full text-slate-800 font-label text-xs font-bold hover:bg-slate-200 transition-colors">
                     <Share2 size={14} />
