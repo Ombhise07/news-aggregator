@@ -1,10 +1,13 @@
-import { Bookmark, LogOut } from "lucide-react";
+import { Bookmark, LogOut, Home } from "lucide-react";
 import SearchBar from "./SearchBar";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function Navbar() {
 
   const navigate = useNavigate();
+  
+  const location = useLocation();
+  const isFavoritePage = location.pathname === "/favorites";
 
   const handleLogout = () => {
     // Example logout logic
@@ -43,16 +46,31 @@ export default function Navbar() {
         {/* Actions */}
         <div className="flex items-center gap-2 md:gap-4">
 
-          {/* Bookmark */}
-          <button
-            className="
-              p-2 rounded-full
-              hover:bg-surface-container
-              transition-colors
-            "
-          >
-            <Bookmark className="w-5 h-5 text-on-surface-variant" />
-          </button>
+          {isFavoritePage ? (
+            // Back to Home
+            <button
+              onClick={() => navigate("/")}
+              className="
+                p-2 rounded-full
+                hover:bg-surface-container
+                transition-colors
+              "
+            >
+              <Home className="w-5 h-5 text-primary" />
+            </button>
+          ) : (
+            // Bookmark 
+            <button
+              onClick={() => navigate("/favorites")}
+              className="
+                p-2 rounded-full
+                hover:bg-surface-container
+                transition-colors
+              "
+            >
+              <Bookmark className="w-5 h-5 text-on-surface-variant" />
+            </button>
+          )}
 
           {/* Logout */}
           <button

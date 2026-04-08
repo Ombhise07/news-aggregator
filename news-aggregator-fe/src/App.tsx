@@ -3,6 +3,7 @@ import {BrowserRouter, Routes, Route} from 'react-router-dom'
 import NewsDetails from './pages/NewsDetails'
 import Home from './pages/Home'
 import LoginPage from './pages/LoginPage';
+import Favorites from './pages/Favorites';
 
 
 function App() {
@@ -11,7 +12,8 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/news-details" element={<NewsDetails />} />
+        <Route path="/news/:id" element={<NewsDetails />} />
+        <Route path="/favorites" element={<Favorites />} />
         <Route path="/login" element={<LoginPage />} />
       </Routes>
     </BrowserRouter>
