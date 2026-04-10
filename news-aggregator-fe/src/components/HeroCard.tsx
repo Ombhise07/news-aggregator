@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import type { NewsArticle } from "../features/news/newsSlice";
@@ -14,6 +14,9 @@ interface Props {
 export default function HeroCard({ article }: Props) {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
+
+  // similar functionality like news card is added for the hero card to know the location
+  const location = useLocation();
 
   const favorites = useSelector(
     (state: RootState) => state.favorites.favorites
@@ -36,7 +39,12 @@ export default function HeroCard({ article }: Props) {
 
   return (
     <article
-      onClick={() => navigate("/news-details", { state: article })}
+      onClick={() => navigate(`/news/${article.id}`, {
+        state: {
+          article,
+          from: location.pathname
+        }
+      })}
       className="group cursor-pointer flex flex-col gap-4"
     >
       {/* Image */}

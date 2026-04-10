@@ -1,5 +1,5 @@
 import type { NewsArticle } from "../features/news/newsSlice";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Bookmark } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -16,6 +16,9 @@ export default function NewsCard({ article, variant = "default" }: NewsCardProps
 
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
+
+  //for knowing from where the card has been clicked Home or Favorites
+  const location = useLocation();
 
   const favorites = useSelector(
     (state: RootState) => state.favorites.favorites
@@ -36,9 +39,14 @@ export default function NewsCard({ article, variant = "default" }: NewsCardProps
 
   return (
     <article
-      onClick={() => navigate(`/news/${article.id}`, {state: article})}
+      onClick={() => navigate(`/news/${article.id}`, {
+        state: {
+          article,
+          from: location.pathname   // passing the current path to know from where the card has been clicked
+        }
+      })}
       className="
-        group cursior-pointer
+        group cursor-pointer
         bg-surface-container-lowest
         rounded-xl
         overflow-hidden

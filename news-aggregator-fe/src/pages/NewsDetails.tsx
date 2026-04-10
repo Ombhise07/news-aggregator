@@ -12,18 +12,24 @@ import {
 export default function NewsDetails() {
   const location = useLocation();
   const navigate = useNavigate();
-  const article = location.state;
+
+  // updates according to the NewsCard and HeroCard
+  const article = location.state?.article;
+  const from = location.state?.from;
   const dispatch = useDispatch<AppDispatch>();
 
   const favorites = useSelector(
     (state: RootState) => state.favorites.favorites
   );
 
-  const isFavorite = favorites.some(
-    (item) => item.id === article.id
-  );
+  const isFavorite = article 
+    ? favorites.some((item) => item.id === article.id)
+    : false;
 
   const handleFavoriteClick = () => {
+
+    if(!article) return;
+
     if (isFavorite) {
       dispatch(removeFromFavorites(article.id));
     } else {
@@ -31,14 +37,14 @@ export default function NewsDetails() {
     }
   };
 
-  if (!article) {
-    return (
-      <div className="p-10">
-        <p>No article data found.</p>
-        <button onClick={() => navigate("/")}>Go Home</button>
-      </div>
-    );
-  }
+  // if (!article) {
+  //   return (
+  //     <div className="p-10">
+  //       <p>No article data found.</p>
+  //       <button onClick={() => navigate("/")}>Go Home</button>
+  //     </div>
+  //   );
+  // }
 
   const sourceName = article.source?.name || "Unknown";
   const sourceInitial = sourceName.charAt(0).toUpperCase();
