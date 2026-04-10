@@ -37,15 +37,6 @@ export default function NewsDetails() {
     }
   };
 
-  // if (!article) {
-  //   return (
-  //     <div className="p-10">
-  //       <p>No article data found.</p>
-  //       <button onClick={() => navigate("/")}>Go Home</button>
-  //     </div>
-  //   );
-  // }
-
   const sourceName = article.source?.name || "Unknown";
   const sourceInitial = sourceName.charAt(0).toUpperCase();
 
