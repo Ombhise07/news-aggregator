@@ -31,3 +31,6 @@ class User(Base):
 
     # Stores provider-specific user ID (for OAuth logins)
     provider_id = Column(String, nullable=True)
+
+    # future: user / admin / moderator
+    role = Column(String, default="user")
