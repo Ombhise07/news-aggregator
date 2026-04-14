@@ -4,9 +4,11 @@ from sqlalchemy import create_engine
 # Importing sessionmaker to create database session factory
 from sqlalchemy.orm import sessionmaker
 
+from app.core.config import settings  # Importing settings to access DATABASE_URL
+
 # Creating the database engine
 # This connects your application to the database using DATABASE_URL
-engine = create_engine("DATABASE_URL")
+engine = create_engine(settings.DATABASE_URL)
 
 # Creating a SessionLocal class (session factory)
 # Each instance of SessionLocal will be a new database session
