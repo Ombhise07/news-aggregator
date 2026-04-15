@@ -1,4 +1,6 @@
 # Importing FastAPI utilities
+import string
+
 from fastapi import Depends, HTTPException
 
 # Importing JWT functions
@@ -16,13 +18,12 @@ from app.core.config import settings
 # Importing DAO function to fetch user
 from app.dao.user_dao import get_user_by_email
 
-# Importing OAuth2PasswordBearer for token-based authentication
-from fastapi.security import OAuth2PasswordBearer
+# HTTP Bearer auth (for manual token handling instead of OAuth2) 
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
-# Creating OAuth2 scheme
-# tokenUrl should point to your login endpoint
-# This enables Swagger "Authorize" button
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+# This will extract token from: 
+# # Authorization: Bearer <token> 
+security = HTTPBearer()
 
 # ---------------- DATABASE DEPENDENCY ---------------- #
 
@@ -39,12 +40,16 @@ def get_db():
 
 # Function to get current authenticated user
 def get_current_user(
-    # Automatically extracts token from Authorization header
-    token: str = Depends(oauth2_scheme),
+   # Extracts Authorization header (Bearer token) 
+    credentials: HTTPAuthorizationCredentials = Depends(security),
 
     # Injects database session
     db: Session = Depends(get_db)
 ):
+    
+    # Extract actual token string
+    token = credentials.credentials
+
     try:
         # Decode JWT token using secret key and algorithm
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
@@ -52,8 +57,11 @@ def get_current_user(
         # Extract user email from token payload ("sub" field)
         email: str = payload.get("sub")
 
+        # Extract token type (access / refresh) 
+        token_type: str = payload.get("type")
+
         # If email is missing, token is invalid
-        if email is None:
+        if email is None or token_type != "access":
             raise HTTPException(status_code=401, detail="Invalid token")
 
     except JWTError:
