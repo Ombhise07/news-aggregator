@@ -39,7 +39,10 @@ def create_access_token(data: dict):
     expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
 
     # Add expiration to token payload
-    to_encode.update({"exp": expire})
+    to_encode.update({
+        "exp": expire,
+        "type": "access"
+    })
 
     # Encode and return JWT token
     return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
@@ -57,7 +60,10 @@ def create_refresh_token(data: dict):
     expire = datetime.utcnow() + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
 
     # Add expiration to payload
-    to_encode.update({"exp": expire})
+    to_encode.update({
+        "exp": expire,
+        "type": "refresh"
+    })
 
     # Encode and return JWT token
     return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
