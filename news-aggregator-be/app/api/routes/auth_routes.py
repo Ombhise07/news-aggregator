@@ -1,3 +1,5 @@
+## IMP IN THIS FILE SOME CHNAGES NEED TO BE MADE DURING PRODUCTION
+
 # Importing FastAPI utilities
 from fastapi import APIRouter, Depends, HTTPException
 
@@ -11,14 +13,14 @@ from app.schemas.user_schema import UserCreate, UserLogin
 from app.schemas.auth_schema import TokenResponse
 
 # Importing service layer functions
-from app.services.auth_service import register_user, login_user
+from app.services.auth_service import register_user, login_user, refresh_access_token
 
 # Importing database session factory
 from app.db.session import SessionLocal
 
-from jose import jwt, JWTError
+from fastapi import Response, Request
+
 from app.core.config import settings
-from app.core.security import create_access_token
 
 # Creating API router
 router = APIRouter()
@@ -53,40 +55,87 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
 # ---------------- LOGIN ROUTE ---------------- #
 
 # Endpoint to login user
-@router.post("/login", response_model=TokenResponse)
-def login(user: UserLogin, db: Session = Depends(get_db)):
+@router.post("/login")
+def login(user: UserLogin, db: Session = Depends(get_db), response: Response = None):
+    """
+    Authenticates a user and issues JWT tokens.
+
+    Flow:
+    1. Validate user credentials
+    2. Generate access + refresh tokens
+    3. Store refresh token securely in HttpOnly cookie
+    4. Return access token in response body
+    """
 
     try:
-        # Call service to login user
-        return login_user(db, user)
+        # # Authenticate user and generate tokens
+        # - access_token: short-lived (used for API requests)
+        # - refresh_token: long-lived (used to get new access tokens)
+        access_token, refresh_token = login_user(db, user)
 
-    except Exception as e:
-        # Return HTTP 401 for authentication errors
-        raise HTTPException(status_code=401, detail=str(e))
-    
-@router.post("/refresh")
-def refresh_access_token(refresh_token: str):
-    try:
-        # Decode refresh token
-        payload = jwt.decode(
-            refresh_token,
-            settings.SECRET_KEY,
-            algorithms=[settings.ALGORITHM]
+        # Store refresh token in HttpOnly cookie
+        # This prevents JavaScript access (protects against XSS attacks)
+        response.set_cookie(
+            key="refresh_token",
+            value=refresh_token,
+            httponly=True,   # Prevents client-side JS from reading the cookie
+            secure=False,    # -> Set to True in production (requires HTTPS) <-
+            samesite="lax"   # Helps mitigate CSRF attacks
         )
 
-        email = payload.get("sub")
-        token_type = payload.get("type")
+        # Return only access token in response body
+        # (refresh token stays hidden in cookie for better security)
+        return {
+            "access_token": access_token,
+            "token_type": "bearer"
+        }
+    
+    except Exception as e:
+        # If authentication fails, return 401 Unauthorized
+        raise HTTPException(status_code=401, detail=str(e))
 
-        # Ensure it's a refresh token
-        if email is None or token_type != "refresh":
-            raise HTTPException(status_code=401, detail="Invalid refresh token")
+# route for rotation of access token using referesh token
+@router.post("/refresh")
+def refresh_access(request: Request, db: Session = Depends(get_db), response: Response = None):
+    try:
+        # Get refresh token from cookie
+        refresh_token = request.cookies.get("refresh_token")
 
-    except JWTError:
-        raise HTTPException(status_code=401, detail="Invalid or expired refresh token")
+        if not refresh_token:
+            raise Exception("No refresh token")
+        
+        # Call service layer (DB + rotation logic)
+        new_access, new_refresh = refresh_access_token(db, refresh_token)
 
-    # Generate new access token
-    new_access_token = create_access_token({"sub": email})
+        # Rotate refresh token cookie
+        response.set_cookie(
+            key="refresh_token",
+            value=new_refresh,
+            httponly=True,
+            secure=False,   # -> True in production <-
+            samesite="lax"
+        )
 
-    return {
-        "access_token": new_access_token
-    }
+        return {
+            "access_token": new_access
+        }
+    except Exception as e:
+        raise HTTPException(status_code=401, detail=str(e))
+    
+
+# route for logout
+@router.post("/logout")
+def logout(request: Request, db: Session = Depends(get_db), response: Response = None):
+
+    # Get refresh token from HttpOnly cookie
+    refresh_token = request.cookies.get("refresh_token")
+
+    # If token exists, revoke it in DB (invalidate it)
+    if refresh_token:
+        revoke_token(db, refresh_token)
+
+    # Remove refresh token cookie from browser
+    response.delete_cookie("refresh_token")
+
+    # Send confirmation response
+    return {"message": "Logged out"}
