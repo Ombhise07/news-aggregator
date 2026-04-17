@@ -1,5 +1,8 @@
 # Importing required SQLAlchemy components
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey,Boolean, DateTime
+
+# importing datetime
+from datetime import datetime
 
 # Importing Base class for ORM model creation
 from app.db.base import Base
@@ -20,3 +23,12 @@ class RefreshToken(Base):
     # Stores the actual refresh token string
     # Cannot be null (every record must have a token)
     token = Column(String, nullable=False)
+
+    # track if token is revoked
+    is_revoked = Column(Boolean, default=False)
+
+    # When token was created 
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    # token expiry time
+    expires_at = Column(DateTime)
