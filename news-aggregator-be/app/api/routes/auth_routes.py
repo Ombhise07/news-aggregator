@@ -14,6 +14,7 @@ from app.schemas.auth_schema import TokenResponse
 
 # Importing service layer functions
 from app.services.auth_service import register_user, login_user, refresh_access_token
+from app.dao.token_dao import revoke_token
 
 # Importing database session factory
 from app.db.session import SessionLocal
