@@ -41,6 +41,7 @@ def create_access_token(data: dict):
     # Add expiration to token payload
     to_encode.update({
         "exp": expire,
+        "type": "access"
     })
 
     # Encode and return JWT token
