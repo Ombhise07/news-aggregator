@@ -23,6 +23,21 @@ export default function LoginPage() {
     }, 1500);
   };
 
+  const handleLogin = async () => {
+    try {
+      const res = await api.post("/auth/login", {
+        email,
+        password,
+      });
+
+      setAccessToken(res.data.access_token);
+
+      window.location.href = "/";
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#f7fafc] text-[#181c1e] font-['Inter',sans-serif]">
       {/* Background blobs */}
@@ -130,6 +145,7 @@ export default function LoginPage() {
               {/* Submit Button */}
               <button
                 type="submit"
+                onClick={handleLogin}
                 disabled={loading}
                 className="w-full bg-gradient-to-r from-[#030813] to-[#1a202c] text-white py-4 rounded-full font-bold text-sm tracking-wide shadow-lg shadow-[#030813]/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex justify-center items-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed"
               >
