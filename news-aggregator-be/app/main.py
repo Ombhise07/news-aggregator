@@ -1,5 +1,6 @@
 # Importing FastAPI framework
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 # Importing authentication routes
 from app.api.routes import auth_routes, user_routes 
@@ -13,6 +14,14 @@ from app.api.routes import favorite_routes
 # Creating FastAPI application instance
 # Title will appear in API documentation (Swagger UI)
 app = FastAPI(title="AI News Aggregator API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # for dev (later restrict this)
+    allow_credentials=True,
+    allow_methods=["*"],  # IMPORTANT → allows OPTIONS
+    allow_headers=["*"],
+)
 
 # This creates all tables
 Base.metadata.create_all(bind=engine)
