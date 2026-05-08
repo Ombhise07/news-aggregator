@@ -17,7 +17,7 @@ app = FastAPI(title="AI News Aggregator API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # for dev (later restrict this)
+    allow_origins=["http://localhost:5173"],  # for dev (later restrict this)
     allow_credentials=True,
     allow_methods=["*"],  # IMPORTANT → allows OPTIONS
     allow_headers=["*"],
