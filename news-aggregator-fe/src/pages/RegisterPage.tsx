@@ -1,47 +1,60 @@
 import { useState } from "react";
 import api from "../services/api";
-import { setAccessToken } from "../services/tokenService";
 import { Link } from "react-router-dom";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState("");
+
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setError(false);
 
-    // Simulate API call
-    setTimeout(() => {
-      setLoading(false);
-      if (!email || !password) {
-        setError(true);
-      }
-    }, 1500);
-  };
+    setError("");
 
-  const handleLogin = async () => {
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
     try {
-      const res = await api.post("/auth/login", {
+      setLoading(true);
+
+      await api.post("/auth/register", {
+        name,
         email,
         password,
       });
 
-      setAccessToken(res.data.access_token);
-
-      window.location.href = "/";
-    } catch (err) {
+      window.location.href = "/login";
+    } catch (err: any) {
       console.error(err);
+
+      console.log(err.response.data);
+
+      setError(
+        Array.isArray(err?.response?.data?.detail)
+        ? err.response.data.detail[0]?.msg
+        : err?.response?.data?.detail ||
+            "Something went wrong. Please try again."
+      );
+      
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen bg-[#f7fafc] text-[#181c1e] font-['Inter',sans-serif]">
-      {/* Background blobs */}
+
+      {/* Background Blobs */}
       <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
         <div className="absolute -top-[10%] -left-[5%] w-[40%] h-[40%] bg-[#88f9b0]/10 blur-[120px] rounded-full" />
         <div className="absolute bottom-0 right-0 w-[30%] h-[30%] bg-[#d2e4ff]/20 blur-[100px] rounded-full" />
@@ -57,27 +70,55 @@ export default function LoginPage() {
                 News<span className="text-[#0061a5]">Hub</span>
               </span>
             </div>
+
             <h1 className="text-3xl font-['Newsreader',serif] font-bold text-[#030813] tracking-tight">
-              Log in to NewsHub
+              Create your account
             </h1>
+
             <p className="text-[#45474c] text-sm">
-              Enter your credentials to access your curated intelligence dashboard.
+              Join NewsHub and access curated intelligence powered by Veritas AI.
             </p>
           </div>
 
           {/* Card */}
           <div className="bg-white p-10 rounded-xl shadow-[0_32px_64px_-12px_rgba(3,8,19,0.08)] border border-[#c6c6cc]/20">
-            <form className="space-y-6" onSubmit={handleSubmit}>
 
-              {/* Error Banner */}
+            <form className="space-y-6" onSubmit={handleRegister}>
+
+              {/* Error */}
               {error && (
                 <div className="flex items-center gap-3 p-4 bg-[#ffdad6] text-[#93000a] rounded-lg text-sm font-medium border border-[#ba1a1a]/10">
-                  <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                  <svg
+                    className="w-5 h-5 shrink-0"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
                   </svg>
-                  Invalid email address or password.
+
+                  {error}
                 </div>
               )}
+
+              {/* Full Name */}
+              <div className="space-y-2">
+                <label
+                  htmlFor="name"
+                  className="block text-[10px] font-bold uppercase tracking-widest text-[#45474c] ml-1"
+                >
+                  Full Name
+                </label>
+
+                <input
+                  id="name"
+                  type="text"
+                  required
+                  placeholder="Alexander Hamilton"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full px-4 py-3.5 bg-[#f1f4f6] border-none rounded-lg focus:outline-none focus:ring-2 focus:ring-[#9fcaff] transition-all placeholder:text-[#45474c]/40 text-[#181c1e] text-sm"
+                />
+              </div>
 
               {/* Email */}
               <div className="space-y-2">
@@ -87,6 +128,7 @@ export default function LoginPage() {
                 >
                   Email Address
                 </label>
+
                 <input
                   id="email"
                   type="email"
@@ -100,20 +142,13 @@ export default function LoginPage() {
 
               {/* Password */}
               <div className="space-y-2">
-                <div className="flex justify-between items-center px-1">
-                  <label
-                    htmlFor="password"
-                    className="block text-[10px] font-bold uppercase tracking-widest text-[#45474c]"
-                  >
-                    Password
-                  </label>
-                  <a
-                    href="#"
-                    className="text-xs font-semibold text-[#0061a5] hover:text-[#00497e] transition-colors"
-                  >
-                    Forgot Password?
-                  </a>
-                </div>
+                <label
+                  htmlFor="password"
+                  className="block text-[10px] font-bold uppercase tracking-widest text-[#45474c] ml-1"
+                >
+                  Password
+                </label>
+
                 <div className="relative">
                   <input
                     id="password"
@@ -124,44 +159,78 @@ export default function LoginPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     className="w-full px-4 py-3.5 bg-[#f1f4f6] border-none rounded-lg focus:outline-none focus:ring-2 focus:ring-[#9fcaff] transition-all placeholder:text-[#45474c]/40 text-[#181c1e] text-sm pr-12"
                   />
+
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[#45474c]/60 hover:text-[#181c1e] transition-colors"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[#45474c]/60 hover:text-[#181c1e]"
                   >
-                    {showPassword ? (
-                      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
-                      </svg>
-                    ) : (
-                      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                    )}
+                    {showPassword ? "🙈" : "👁️"}
+                  </button>
+                </div>
+
+                <p className="text-[10px] uppercase tracking-wider text-[#45474c]/70 font-bold ml-1">
+                  Minimum 6 characters
+                </p>
+              </div>
+
+              {/* Confirm Password */}
+              <div className="space-y-2">
+                <label
+                  htmlFor="confirmPassword"
+                  className="block text-[10px] font-bold uppercase tracking-widest text-[#45474c] ml-1"
+                >
+                  Confirm Password
+                </label>
+
+                <div className="relative">
+                  <input
+                    id="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    required
+                    placeholder="••••••••"
+                    value={confirmPassword}
+                    onChange={(e) =>
+                      setConfirmPassword(e.target.value)
+                    }
+                    className="w-full px-4 py-3.5 bg-[#f1f4f6] border-none rounded-lg focus:outline-none focus:ring-2 focus:ring-[#9fcaff] transition-all placeholder:text-[#45474c]/40 text-[#181c1e] text-sm pr-12"
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setShowConfirmPassword(!showConfirmPassword)
+                    }
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[#45474c]/60 hover:text-[#181c1e]"
+                  >
+                    {showConfirmPassword ? "🙈" : "👁️"}
                   </button>
                 </div>
               </div>
 
-              {/* Submit Button */}
+              {/* Submit */}
               <button
                 type="submit"
-                onClick={handleLogin}
                 disabled={loading}
                 className="w-full bg-gradient-to-r from-[#030813] to-[#1a202c] text-white py-4 rounded-full font-bold text-sm tracking-wide shadow-lg shadow-[#030813]/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex justify-center items-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed"
               >
                 {loading && (
                   <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 )}
-                <span>{loading ? "Logging in..." : "Log In"}</span>
+
+                <span>
+                  {loading ? "Creating Account..." : "Create Account"}
+                </span>
               </button>
 
               {/* Divider */}
               <div className="relative flex items-center py-2">
                 <div className="flex-grow border-t border-[#c6c6cc]/30" />
+
                 <span className="flex-shrink mx-4 text-[10px] font-bold uppercase tracking-[0.2em] text-[#45474c]/50">
                   Or continue with
                 </span>
+
                 <div className="flex-grow border-t border-[#c6c6cc]/30" />
               </div>
 
@@ -195,11 +264,12 @@ export default function LoginPage() {
           {/* Footer CTA */}
           <div className="text-center">
             <p className="text-[#45474c] text-sm">
-              Don't have an account?{" "}
+              Already have an account?
               <Link
-                to='/register' 
-                className="text-[#0061a5] font-bold hover:underline ml-1">
-                Register
+                to="/login"
+                className="text-[#0061a5] font-bold hover:underline ml-1"
+              >
+                Login
               </Link>
             </p>
           </div>
@@ -209,11 +279,18 @@ export default function LoginPage() {
       {/* Footer */}
       <footer className="w-full py-12 bg-slate-50 border-t border-[#c6c6cc]/10">
         <div className="flex flex-col md:flex-row justify-between items-center px-12 space-y-4 md:space-y-0 max-w-7xl mx-auto">
+
           <span className="text-xs uppercase tracking-widest text-slate-600">
             © 2026 NewsHub. All rights reserved.
           </span>
+
           <div className="flex gap-8">
-            {["Terms of Service", "Privacy Policy", "Cookie Settings", "Help Center"].map((link) => (
+            {[
+              "Terms of Service",
+              "Privacy Policy",
+              "Cookie Settings",
+              "Help Center",
+            ].map((link) => (
               <a
                 key={link}
                 href="#"
