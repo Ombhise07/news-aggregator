@@ -27,13 +27,17 @@ export default function RegisterPage() {
     try {
       setLoading(true);
 
-      await api.post("/auth/register", {
+      const res = await api.post("/auth/register", {
         name,
         email,
         password,
       });
 
-      window.location.href = "/login";
+      // Store auth data
+      localStorage.setItem("token", res.data.access_token);
+      localStorage.setItem("email", email);
+
+      window.location.href = "/";
     } catch (err: any) {
       console.error(err);
 
@@ -45,7 +49,7 @@ export default function RegisterPage() {
         : err?.response?.data?.detail ||
             "Something went wrong. Please try again."
       );
-      
+
     } finally {
       setLoading(false);
     }
