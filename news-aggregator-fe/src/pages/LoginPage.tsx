@@ -33,6 +33,10 @@ export default function LoginPage() {
 
       setAccessToken(res.data.access_token);
 
+      // Store auth data
+      localStorage.setItem("token", res.data.access_token);
+      localStorage.setItem("email", email);
+
       window.location.href = "/";
     } catch (err) {
       console.error(err);
