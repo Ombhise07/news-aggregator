@@ -1,6 +1,11 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk} from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { NewsArticle } from "../news/newsSlice";
+import {
+  addFavoriteApi,
+  removeFavoriteApi,
+  getFavoritesApi,
+} from "../../services/favoritesApi";
 
 // ---------------- STATE TYPE ----------------
 
@@ -11,6 +16,29 @@ interface FavoritesState {
 const initialState: FavoritesState = {
   favorites: [],
 };
+
+export const fetchFavorites = createAsyncThunk(
+  "favorites/fetchFavorites",
+  async () => {
+    return await getFavoritesApi();
+  }
+);
+
+export const addFavorite = createAsyncThunk(
+  "favorites/addFavorite",
+  async (article: any) => {
+    await addFavoriteApi(article);
+    return article;
+  }
+);
+
+export const removeFavorite = createAsyncThunk(
+  "favorites/removeFavorite",
+  async (url: string) => {
+    await removeFavoriteApi(url);
+    return url;
+  }
+);
 
 // ---------------- SLICE ----------------
 
