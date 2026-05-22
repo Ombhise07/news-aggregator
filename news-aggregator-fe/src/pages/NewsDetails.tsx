@@ -8,6 +8,7 @@ import {
   addToFavorites,
   removeFromFavorites,
 } from "../features/favorites/favoritesSlice";
+import type React from "react";
 
 export default function NewsDetails() {
   const location = useLocation();
@@ -15,7 +16,7 @@ export default function NewsDetails() {
 
   // updates according to the NewsCard and HeroCard
   const article = location.state?.article;
-  const from = location.state?.from;
+  // const from = location.state?.from;
   const dispatch = useDispatch<AppDispatch>();
 
   const favorites = useSelector(
@@ -23,17 +24,30 @@ export default function NewsDetails() {
   );
 
   const isFavorite = article 
-    ? favorites.some((item) => item.id === article.id)
+    ? favorites.some((item) => item.url === article.url)
     : false;
 
-  const handleFavoriteClick = () => {
+  const handleFavoriteClick = async(
+    e: React.MouseEvent
+  ) => {
 
-    if(!article) return;
+    e.stopPropagation();
 
-    if (isFavorite) {
-      dispatch(removeFromFavorites(article.id));
-    } else {
-      dispatch(addToFavorites(article));
+    const token  = localStorage.getItem("token");
+
+    if (!token){
+      navigate("/login");
+      return;
+    }
+
+    try {
+      if (isFavorite) {
+        dispatch(removeFromFavorites(article.url));
+      } else {
+        dispatch(addToFavorites(article));
+      }
+    } catch (error){
+      console.error(error); 
     }
   };
 
