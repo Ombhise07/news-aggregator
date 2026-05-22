@@ -1,6 +1,7 @@
 import api from "./api";
+import type { NewsArticle } from "../features/news/newsSlice";
 
-export const addFavoriteApi = async (article: any) => {
+export const addFavoriteApi = async (article: NewsArticle) => {
   const token = localStorage.getItem("token");
 
   const response = await api.post(
@@ -10,7 +11,7 @@ export const addFavoriteApi = async (article: any) => {
       description: article.description,
       url: article.url,
       image: article.image,
-      source: article.source.name,
+      source: article.source.name || "Unknown",
       published_at: article.publishedAt,
     },
     {

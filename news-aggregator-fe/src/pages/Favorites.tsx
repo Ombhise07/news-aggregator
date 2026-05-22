@@ -1,10 +1,12 @@
-import { useSelector } from "react-redux";
+import { useDispatch,useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-import type { RootState } from "../app/store";
+import type { RootState, AppDispatch } from "../app/store";
 
 import Navbar from "../components/Navbar";
 import NewsCard from "../components/NewsCard";
+import { useEffect } from "react";
+import { fetchFavorites } from "../features/favorites/favoritesSlice";
 
 export default function Favorites() {
 
@@ -13,6 +15,16 @@ export default function Favorites() {
   const  favorites = useSelector(
     (state: RootState) => state.favorites.favorites
   );
+
+  const dispatch =  useDispatch<AppDispatch>();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if(token){
+      fetchFavorites();
+    }
+  }, [dispatch]);
 
   return (
     <div className="min-h-screen bg-surface text-on-surface">
